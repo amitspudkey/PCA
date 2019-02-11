@@ -5,8 +5,8 @@ from sklearn.decomposition import PCA
 
 def main():
     print("Program: PCA")
-    print("Release: 0.1.0")
-    print("Date: 2019-02-07")
+    print("Release: 0.1.1")
+    print("Date: 2019-02-11")
     print("Author: Brian Neely")
     print()
     print()
@@ -39,10 +39,10 @@ def main():
     pca = PCA()
 
     # Set input data
-    X = data[columns]
+    x = data[columns]
 
     # Run PCA
-    pca_results = pca.fit_transform(X)
+    pca_results = pca.fit_transform(x)
 
     # Report Explained Variance Ratio
     explained_variance = pca.explained_variance_ratio_
@@ -53,6 +53,9 @@ def main():
         print("Factor " + str(index + 1) + ": " + str(round(i * 100, 1)) + "% - Cumulative: " + str(round(total_explained * 100, 1)) + "%")
     print()
 
+    # Ask for number of factors to retain
+    number_of_factors = int(input("How many factors to retain: "))
+
     # Create header list for the pca factors
     pca_column_header = list()
     for index, i in enumerate(pca.components_):
@@ -61,15 +64,21 @@ def main():
     # Transform numpy array to data frame
     pca_factors = pd.DataFrame(data = pca_results, columns=pca_column_header)
 
-    # Concatenate PCA results to original data frame
+    # Find unused columns in original dataset
     unused_columns = list()
     for i in list(data.columns.values):
         if i not in columns:
             unused_columns.append(i)
 
+    # If number of factors is greater than number of actual factors, lower
+    if number_of_factors >= len(pca_column_header):
+        number_of_factors = int(len(pca_column_header))
+
     # Concatenate unused columns to PCA results
     data_out = data[unused_columns]
-    data_out = pd.concat([data_out, pca_factors], axis=1)
+    for i in range(0, number_of_factors):
+        if i <= number_of_factors:
+            data_out = pd.concat([data_out, pca_factors["PCA_Factor_" + str(i)]], axis=1)
 
     # Ask if the previous factors should be retained
     retain_pca_input = y_n_question("Retain columns used for PCA creation?: ")
@@ -80,7 +89,7 @@ def main():
 
     # Write output file
     print("Writing output file...")
-    data_out.to_csv(file_out)
+    data_out.to_csv(file_out, index=False)
     print("Output file wrote!")
 
     # Ask to export components
@@ -88,7 +97,7 @@ def main():
 
     if write_components == 'y':
         components_file_out = select_file_out(file_in)
-        components_df = pd.DataFrame(data=pca.components_)
+        components_df = pd.DataFrame(data=pca.components_, columns=columns, index=pca_column_header)[:number_of_factors]
         components_df.to_csv(components_file_out)
 
 
@@ -318,8 +327,8 @@ def open_file(file_in, encoder, delimination):
     except UnicodeDecodeError:
         print("Encoder Error for: " + encoder)
         return "Encode Error"
-
     return data
+
 
 
 
