@@ -146,7 +146,7 @@ def column_list(data, column_selection_type_in):
 
                 # Ask for index list
                 column_index_list_string = input("Enter selections separated by spaces: ")
-                #Comment
+
                 # Check if input was empty
                 if not column_index_list_string:
                     print("No selection was used, all columns will be used.")
