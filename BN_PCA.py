@@ -136,6 +136,7 @@ def y_n_question(question):
 
 
 def column_list(data, column_selection_type_in):
+    print("Reading Column List")
     headers = list(data.columns.values)
     if column_selection_type_in == 1:
         while True:
