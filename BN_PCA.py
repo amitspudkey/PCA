@@ -5,8 +5,8 @@ from sklearn.decomposition import PCA
 
 def main():
     print("Program: PCA")
-    print("Release: 0.1.1")
-    print("Date: 2019-02-11")
+    print("Release: 0.1.2")
+    print("Date: 2019-03-12")
     print("Author: Brian Neely")
     print()
     print()
@@ -34,6 +34,15 @@ def main():
 
     # Get list of columns from PCA
     columns = column_list(data, column_selection_type_input)
+
+    # Get list of indices for complete data
+    data_complete_index = data.dropna(subset=columns).index
+
+    # Drop na from original dataset
+    data_na = data[~data.index.isin(data_complete_index)]
+
+    # Get complete data
+    data = data[data.index.isin(data_complete_index)]
 
     # Set PCA factors
     pca = PCA()
@@ -74,11 +83,16 @@ def main():
     if number_of_factors >= len(pca_column_header):
         number_of_factors = int(len(pca_column_header))
 
-    # Concatenate unused columns to PCA results
+    # Reindex Data
     data_out = data[unused_columns]
+    data_out.reset_index(inplace=True)
+
+    # Concatenate unused columns to PCA results
     for i in range(0, number_of_factors):
-        if i <= number_of_factors:
-            data_out = pd.concat([data_out, pca_factors["PCA_Factor_" + str(i)]], axis=1)
+        data_out["PCA_Factor_" + str(i)] = pca_factors["PCA_Factor_" + str(i)]
+
+    # Reindex data_out to original index
+    data_out = data_out.set_index('index')
 
     # Ask if the previous factors should be retained
     retain_pca_input = y_n_question("Retain columns used for PCA creation?: ")
@@ -86,6 +100,16 @@ def main():
     # If desired, concatenate pca data onto output file
     if retain_pca_input == 'y':
         data_out = pd.concat([data_out, data[columns]], axis=1)
+
+    # Union back null data making sure it exists in both datasets
+    columns_to_append_lst = list()
+    for i in list(data_out):
+        for j in list(data_na):
+            if i == j:
+                columns_to_append_lst.append(i)
+
+    # Union back null data
+    data_out = data_out.append(data_na[columns_to_append_lst], sort=False).sort_index()
 
     # Write output file
     print("Writing output file...")
