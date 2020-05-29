@@ -1,7 +1,7 @@
 import time
 
 
-print("Functions")
+print("Function: Selection")
 print("Release: 1.0.0")
 print("Date: 2020-05-29")
 print("Author: Brian Neely")

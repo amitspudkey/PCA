@@ -8,7 +8,7 @@ from selection import *
 
 def main():
     print("Program: PCA")
-    print("Release: 0.2.0")
+    print("Release: 1.0.1")
     print("Date: 2020-05-29")
     print("Author: Brian Neely")
     print()
@@ -56,6 +56,11 @@ def main():
 
 
 def bn_pca(data, pca_columns):
+    print("Function: BN_PCA")
+    print("Release: 1.0.1")
+    print("Date: 2020-05-29")
+    print("Author: Brian Neely")
+
     # Get list of indices for complete data
     data_complete_index = data.dropna(subset=pca_columns).index
 

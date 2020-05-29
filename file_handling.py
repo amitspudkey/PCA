@@ -4,7 +4,7 @@ import os
 from tkinter import Tk
 
 
-print("Functions")
+print("Function: File Handling")
 print("Release: 1.0.0")
 print("Date: 2020-05-29")
 print("Author: Brian Neely")
